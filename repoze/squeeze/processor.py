@@ -33,9 +33,6 @@ class ResourceSqueezingMiddleware(object):
         self.threshold = threshold
         self.accept_request_registry = {}
         
-    def process(self):
-        pass
-
     def get_merged_resource(self, cache, selection):
         expires = None
         
