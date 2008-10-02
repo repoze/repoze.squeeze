@@ -1,1 +1,9 @@
-repoze.squeeze 0.1 (dev)
+Changelog
+---------
+
+0.1 (released 10/2-2008)
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Initial release.
+
+
