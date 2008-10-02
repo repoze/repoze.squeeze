@@ -11,7 +11,7 @@ are resource expiration dates.
 
 Documents that are not squeezed are given the 'no-cache' pragma in an
 expectation that we will be able to squeeze it after sufficient
-burn-in. Squeezed resources are served with expiration dates no later
+burn-in. Squeezed documents are served with expiration dates no later
 than the expiration dates of the squeezed resources which it
 references.
 
