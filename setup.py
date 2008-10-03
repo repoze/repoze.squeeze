@@ -47,6 +47,7 @@ setup(name='repoze.squeeze',
       namespace_packages=['repoze'],
       zip_safe=False,
       install_requires=[
+          'setuptools',
           'lxml >= 2.1.1',
           'WebOb',
                  ],
