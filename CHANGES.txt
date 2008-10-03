@@ -1,8 +1,16 @@
 Changelog
 ---------
 
-0.1 (released 10/2-2008)
-~~~~~~~~~~~~~~~~~~~~~~~~
+Head
+~~~~
+
+0.2 (released 2008-10-03)
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Add setuptools as a dependency. [mborch]
+
+0.1 (released 2008-10-02)
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - Initial release.
 
