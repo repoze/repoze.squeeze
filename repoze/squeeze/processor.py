@@ -215,7 +215,7 @@ def get_url(tree, host, uri, src):
         return src
     
     if tree.xpath('.//base'):
-        url = base.attrib['href']
+        url = tree.xpath('.//base')[0].attrib['href']
     else:
         path = "/".join((host, uri))
         protocol, host, path, query, fragment = urlparse.urlsplit(path)
