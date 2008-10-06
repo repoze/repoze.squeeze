@@ -42,8 +42,10 @@ class ResourceSqueezingMiddleware(object):
                 return expires, None
 
         # create extension
+        ext = None
         body, mimetype, ttl = cache[selection[0]]
-        ext = mimetypes.guess_extension(mimetype)
+        if mimetype is not None:
+            ext = mimetypes.guess_extension(mimetype)
 
         # compute digest
         out = StringIO()
@@ -108,7 +110,10 @@ class ResourceSqueezingMiddleware(object):
         stylesheets = accept_request_data.stylesheets
         appearances = accept_request_data.appearances
         cache = accept_request_data.cache
-        
+
+        if not body.strip():
+            return False, None, body
+
         tree = lxml.html.fromstring(body)
         changed = False
 
