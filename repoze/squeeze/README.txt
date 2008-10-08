@@ -64,13 +64,20 @@ actual resources (so we couldn't possibly merge them).
 
 Request the four resources that our example document references.
 
+  >>> test_javascript = "/* An example javascript */"
+  
+  >>> test_stylesheet = """\
+  ... body { background: url(background.png) repeat-xy; }
+  ... body { background-image: url(background.png) repeat-xy; }
+  ... """
+  
   >>> def process_demo_resources(middleware, headers=[]):
-  ...     app_data[:] = ["js", "application/javascript"] + headers
+  ...     app_data[:] = [test_javascript, "application/javascript"] + headers
   ...     environ = Request.blank("/foo.js").environ
   ...     middleware(environ, start_response)
   ...     environ = Request.blank("/bar.js").environ
   ...     middleware(environ, start_response)
-  ...     app_data[:] = ["css", 'text/css'] + headers
+  ...     app_data[:] = [test_stylesheet, 'text/css'] + headers
   ...     environ = Request.blank("/foo.css").environ
   ...     middleware(environ, start_response)
   ...     environ = Request.blank("/bar.css").environ
@@ -88,10 +95,22 @@ Now we should have a full cache with regards to these two resources.
       <meta>
       <title>Example page</title>
       <script type="text/javascript"
-      src="http://localhost/squeeze/9c593bdb86bbdecd0e2139e2bd270bc45d831861.js"></script>
-      <style><!-- @import url(http://localhost/squeeze/c7dd8626238999fa413dc434facc1e321d51017d.css); --></style>
+      src="http://localhost/squeeze/5143af681b9e5f4a8a9a59ab9e52be94c36b6bcc.js"></script>
+      <style><!-- @import url(http://localhost/squeeze/118cbec2ead4e0061d79c0699a47c95e32f4f397.css); --></style>
     </head>
   </html>
+
+Inspecting the merged file (which has been written to the cache
+directory), we see that URLs to background-images have been
+rebased. Note that you'll see the stylesheet appearing twice due to
+our test requests.
+  
+  >>> print open(os.path.join(
+  ...     cache_dir, '118cbec2ead4e0061d79c0699a47c95e32f4f397.css')).read()
+  body { background: url(http://localhost/background.png) repeat-xy; }
+  body { background-image: url(http://localhost/background.png) repeat-xy; }
+  body { background: url(http://localhost/background.png) repeat-xy; }
+  body { background-image: url(http://localhost/background.png) repeat-xy; }
   
 Cache-headers
 -------------
@@ -142,7 +161,7 @@ Let's serve the resources with a explicit expiration date.
 
 Running the application, we'll see that document is squeezed.
   
-  >>> '9c593bdb86bbdecd0e2139e2bd270bc45d831861' in \
+  >>> '5143af681b9e5f4a8a9a59ab9e52be94c36b6bcc' in \
   ...     "".join(middleware(environ, start_response))
   True
 

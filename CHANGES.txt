@@ -4,10 +4,16 @@ Changelog
 Head
 ~~~~
 
+0.3 (released 2008-10-08)
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Relative URLs appearing in stylesheets are now made absolute before
+  merging. [malthe]
+
 0.2 (released 2008-10-03)
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- Add setuptools as a dependency. [mborch]
+- Add setuptools as a dependency. [malthe]
 
 0.1 (released 2008-10-02)
 ~~~~~~~~~~~~~~~~~~~~~~~~~

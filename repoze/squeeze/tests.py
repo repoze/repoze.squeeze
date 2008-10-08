@@ -1,3 +1,4 @@
+import os
 import unittest
 import doctest
 
@@ -11,7 +12,7 @@ def test_suite():
     return unittest.TestSuite([
         doctest.DocFileSuite(
         'README.txt',
-        globs=dict(cache_dir=cache_dir),
+        globs=dict(cache_dir=cache_dir, os=os),
         optionflags=OPTIONFLAGS,
         package="repoze.squeeze"),
 
