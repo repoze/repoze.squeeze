@@ -2,8 +2,6 @@ import os
 import sys
 import unittest
 import doctest
-from datetime import timedelta, datetime
-from collections import defaultdict
 
 OPTIONFLAGS = (doctest.ELLIPSIS |
                doctest.NORMALIZE_WHITESPACE)
