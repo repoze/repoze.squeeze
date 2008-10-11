@@ -1,4 +1,5 @@
 import os
+import sys
 import unittest
 import doctest
 from datetime import timedelta, datetime
@@ -44,9 +45,13 @@ class TestResourceSqueezinMiddleware(unittest.TestCase):
         changed, expires, processed_html = mw.process_html(
             requestdata, 'foo', 'http://foo/bar.css', html)
         # It should not handle the IE comment in any way
-        self.assertEqual(requestdata.stylesheets.keys(), 
+        self.assertEqual(requestdata.stylesheets.keys(),
                          [('http://john/doe.css', 'http://john/doegh.css')])
 
+
+if sys.version_info[:3] < (2,5,0):
+    print "Python 2.5 is required to run the test suite."
+    sys.exit(1)
 
 def test_suite():
     return unittest.TestSuite([
