@@ -36,7 +36,7 @@ class ResourceSqueezingMiddleware(object):
         self.threshold = threshold
         self.accept_request_registry = {}
         
-    def get_merged_resource(self, cache, selection):
+    def get_merged_resource(self, cache, selection, mediatypes):
         expires = None
         
         # verify that the entire selection is in the cache
@@ -52,11 +52,15 @@ class ResourceSqueezingMiddleware(object):
 
         # compute digest
         out = StringIO()
-        for body, mimetype, ttl in map(cache.get, selection):
+        for url, body, mimetype, ttl in ((s,) + cache.get(s)
+                                         for s in selection):
+            mediatype = mediatypes.get(url)
             if expires is None or ttl < expires:
                 expires = ttl
-                
-            out.write(body)
+            if mimetype == 'text/css' and mediatype:
+                out.write('@media %s {\n%s}\n' % (mediatype, body))
+            else:
+                out.write(body)
         body = out.getvalue()
         digest = sha.new(body).hexdigest() + (ext or "")
 
@@ -114,6 +118,7 @@ class ResourceSqueezingMiddleware(object):
 
         return response(environ, start_response)
 
+
     def process_html(self, accept_request_data, host, uri, body):
         javascripts = accept_request_data.javascripts
         stylesheets = accept_request_data.stylesheets
@@ -149,25 +154,28 @@ class ResourceSqueezingMiddleware(object):
     def update_elements(self, elements, selections, tree, host, uri, cache):
         changed = False
         expires = None
-        
+        mediatypes = {}
+
         for element in elements:
             mutator, accessor = tag_functions[element.tag]
 
             # prepend base path to relative path
             src = get_url(tree, host, uri, accessor(element))
+            mediatypes[src] = element.attrib.get('media')
 
             if not src.startswith(host):
                 continue
-            
+
             for selection in selections:
-                ttl, resource = self.get_merged_resource(cache, selection)
-                
+                ttl, resource = self.get_merged_resource(cache, selection,
+                                                         mediatypes)
+
                 if resource is None or src not in selection:
                     continue
 
                 if expires is None or ttl < expires:
                     expires = ttl
-                
+
                 # if this is the last item in the selection,
                 # merge and update link, else remove it.
                 if src == selection[-1]:
@@ -180,7 +188,7 @@ class ResourceSqueezingMiddleware(object):
                     parent.remove(element)
 
         return expires, changed
-    
+
 def update_script_tag(element, url):
     element.attrib['src'] = url
 

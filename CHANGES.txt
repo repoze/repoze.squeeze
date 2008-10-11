@@ -4,6 +4,9 @@ Changelog
 Head
 ~~~~
 
+- Media types for stylesheets are now taken into account when merging
+  the resources. Squeze uses CSS2 `@media <type>` syntax. [jvloothuis]
+
 0.3 (released 2008-10-08)
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 

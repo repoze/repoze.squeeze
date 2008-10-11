@@ -11,6 +11,8 @@ the browser resources referenced in the DOM.
   ...    <script type="text/javascript" src="foo.js"></script>
   ...    <script type="text/javascript" src="bar.js"></script>
   ...    <link type="text/css" href="foo.css" />
+  ...    <link type="text/css" href="print-foo.css" media="print" />
+  ...    <link type="text/css" href="print-bar.css" media="print" />
   ...    <style><!-- @import url(bar.css); --></style>
   ...  </head>
   ... </html>"""
@@ -58,11 +60,13 @@ actual resources (so we couldn't possibly merge them).
       <script type="text/javascript" src="foo.js"></script>
       <script type="text/javascript" src="bar.js"></script>
       <link href="foo.css" type="text/css">
+      <link href="print-foo.css" media="print" type="text/css">
+      <link href="print-bar.css" media="print" type="text/css">
       <style><!-- @import url(bar.css); --></style>
     </head>
   </html>
 
-Request the four resources that our example document references.
+Request the resources that our example document references.
 
   >>> test_javascript = "/* An example javascript */"
   
@@ -73,19 +77,18 @@ Request the four resources that our example document references.
   
   >>> def process_demo_resources(middleware, headers=[]):
   ...     app_data[:] = [test_javascript, "application/javascript"] + headers
-  ...     environ = Request.blank("/foo.js").environ
-  ...     middleware(environ, start_response)
-  ...     environ = Request.blank("/bar.js").environ
-  ...     middleware(environ, start_response)
+  ...     for resource in ('/foo.js', '/bar.js'):
+  ...         environ = Request.blank(resource).environ
+  ...         middleware(environ, start_response)
   ...     app_data[:] = [test_stylesheet, 'text/css'] + headers
-  ...     environ = Request.blank("/foo.css").environ
-  ...     middleware(environ, start_response)
-  ...     environ = Request.blank("/bar.css").environ
-  ...     middleware(environ, start_response)
+  ...     for resource in ('/foo.css', '/bar.css',
+  ...                      '/print-foo.css', '/print-bar.css'):
+  ...         environ = Request.blank(resource).environ
+  ...         middleware(environ, start_response)
 
   >>> process_demo_resources(middleware)
   
-Now we should have a full cache with regards to these two resources.
+Now we should have a full cache with regards to these resources.
 
   >>> environ = Request.blank("/foo.html").environ
   >>> app_data[:] = [document, 'text/html']
@@ -96,7 +99,7 @@ Now we should have a full cache with regards to these two resources.
       <title>Example page</title>
       <script type="text/javascript"
       src="http://localhost/squeeze/5143af681b9e5f4a8a9a59ab9e52be94c36b6bcc.js"></script>
-      <style><!-- @import url(http://localhost/squeeze/118cbec2ead4e0061d79c0699a47c95e32f4f397.css); --></style>
+      <style><!-- @import url(http://localhost/squeeze/fa0c046451639595d3b9b0ee7a85d09c2fcb5080.css); --></style>
     </head>
   </html>
 
@@ -104,14 +107,25 @@ Inspecting the merged file (which has been written to the cache
 directory), we see that URLs to background-images have been
 rebased. Note that you'll see the stylesheet appearing twice due to
 our test requests.
-  
+
+The media for the stylesheets has been taken into account as
+well. Squeeze has merged them with the `@media` CSS2 syntax.
+
   >>> print open(os.path.join(
-  ...     cache_dir, '118cbec2ead4e0061d79c0699a47c95e32f4f397.css')).read()
+  ...     cache_dir, 'fa0c046451639595d3b9b0ee7a85d09c2fcb5080.css')).read()
   body { background: url(http://localhost/background.png) repeat-xy; }
   body { background-image: url(http://localhost/background.png) repeat-xy; }
+  @media print {
   body { background: url(http://localhost/background.png) repeat-xy; }
   body { background-image: url(http://localhost/background.png) repeat-xy; }
-  
+  }
+  @media print {
+  body { background: url(http://localhost/background.png) repeat-xy; }
+  body { background-image: url(http://localhost/background.png) repeat-xy; }
+  }
+  body { background: url(http://localhost/background.png) repeat-xy; }
+  body { background-image: url(http://localhost/background.png) repeat-xy; }
+
 Cache-headers
 -------------
 
@@ -138,6 +152,8 @@ The middleware maintains separate state with regards to vary-headers.
       <script type="text/javascript" src="foo.js"></script>
       <script type="text/javascript" src="bar.js"></script>
       <link href="foo.css" type="text/css">
+      <link href="print-foo.css" media="print" type="text/css">
+      <link href="print-bar.css" media="print" type="text/css">
       <style><!-- @import url(bar.css); --></style>
     </head>
   </html>
