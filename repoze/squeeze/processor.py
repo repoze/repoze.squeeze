@@ -114,14 +114,15 @@ class ResourceSqueezingMiddleware(object):
         # if url matches a URL we've seen in a processed document, and
         # if it's served from this host, process the response body and
         # cache it
-        if request.url in accept_request_data.appearances:
+        url = urllib.unquote(request.url)
+        if url in accept_request_data.appearances:
             ttl = response.expires
             if content_type == 'text/css':
-                base_path = os.path.dirname(request.url)
+                base_path = os.path.dirname(url)
                 response.body = re_stylesheet_url.sub(
                     'url(%s/\\1)' % base_path, response.body)
                 
-            accept_request_data.cache[request.url] = response.body, content_type, ttl
+            accept_request_data.cache[url] = response.body, content_type, ttl
 
         return response(environ, start_response)
 

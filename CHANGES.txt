@@ -3,6 +3,8 @@ Changelog
 
 In next release
 
+- Unquote request URL when querying cache. [malthe]
+
 - Added support for ``repoze.xmliter`` which allows reusing an
   ``lxml`` document tree between middlewares. [malthe]
 
