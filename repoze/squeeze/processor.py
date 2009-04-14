@@ -178,6 +178,7 @@ class ResourceSqueezingMiddleware(object):
         mediatypes = {}
 
         for element in elements:
+            parent = element.getparent()
             mutator, accessor = tag_functions[element.tag]
             url = accessor(element)
             if url is None:
@@ -207,21 +208,10 @@ class ResourceSqueezingMiddleware(object):
                     changed = True
                     mutator(element, url)
                 else:
-                    parent = element.getparent()
-
-                    # it's been observed that ``element`` may not have
-                    # a parent, but the cause has not yet been
-                    # identified---log a warning message and return
-                    # the document unchanged
-                    if parent is None:
-                        logger.warn(
-                            "Element has no parent--document may be corrupted. "
-                            "Ignoring request.")
-                        return None, False
-
                     index = parent.index(element)
                     parent.remove(element)
-
+                    break
+                    
         return expires, changed
 
 def update_script_tag(element, url):
