@@ -3,6 +3,9 @@ Changelog
 
 In next release
 
+- If a response has status '304 Not Modified', update the ``ttl`` but
+  not the content. [malthe]
+
 - If a script- or style-tag does not have a source or link, ignore
   it. [malthe]
 

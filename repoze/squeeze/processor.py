@@ -121,8 +121,16 @@ class ResourceSqueezingMiddleware(object):
                 base_path = os.path.dirname(url)
                 response.body = re_stylesheet_url.sub(
                     'url(%s/\\1)' % base_path, response.body)
-                
-            accept_request_data.cache[url] = response.body, content_type, ttl
+
+            status_code = int(response.status.split(' ', 1)[0])
+            if status_code == 200:
+                accept_request_data.cache[url] = response.body, content_type, ttl
+            elif status_code == 304:
+                # update ttl for cached resource
+                cache = accept_request_data.cache.get(url)
+                if cache is not None:
+                    body, content_type, previous_ttl = cache
+                    accept_request_data.cache[url] = body, content_type, ttl
 
         return response(environ, start_response)
 
