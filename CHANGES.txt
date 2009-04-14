@@ -3,6 +3,9 @@ Changelog
 
 In next release
 
+- If a script- or style-tag does not have a source or link, ignore
+  it. [malthe]
+
 - Unquote request URL when querying cache. [malthe]
 
 - Added support for ``repoze.xmliter`` which allows reusing an

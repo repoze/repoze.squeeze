@@ -148,7 +148,9 @@ class ResourceSqueezingMiddleware(object):
             elements = tree.xpath(xpath)
             for element in elements:
                 mutator, accessor = tag_functions[element.tag]
-                items.append(get_url(tree, host, uri, accessor(element)))
+                url = accessor(element)
+                if url is not None:
+                    items.append(get_url(tree, host, uri, url))
             selections = maintain_appearances(
                 items, groups, appearances, self.threshold)
             ttl, changed = self.update_elements(
@@ -166,9 +168,12 @@ class ResourceSqueezingMiddleware(object):
 
         for element in elements:
             mutator, accessor = tag_functions[element.tag]
-
+            url = accessor(element)
+            if url is None:
+                continue
+            
             # prepend base path to relative path
-            src = get_url(tree, host, uri, accessor(element))
+            src = get_url(tree, host, uri, url)
             mediatypes[src] = element.attrib.get('media')
 
             if not src.startswith(host):
