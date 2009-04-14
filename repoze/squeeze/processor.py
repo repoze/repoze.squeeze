@@ -6,9 +6,12 @@ import urlparse
 import lxml.html
 import sha
 import mimetypes
+import logging
 import webob
 import urllib
 
+logger = logging.getLogger("squeeze")
+    
 try:
     from repoze.xmliter import XMLSerializer
 except ImportError:
@@ -205,6 +208,17 @@ class ResourceSqueezingMiddleware(object):
                     mutator(element, url)
                 else:
                     parent = element.getparent()
+
+                    # it's been observed that ``element`` may not have
+                    # a parent, but the cause has not yet been
+                    # identified---log a warning message and return
+                    # the document unchanged
+                    if parent is None:
+                        logger.warn(
+                            "Element has no parent--document may be corrupted. "
+                            "Ignoring request.")
+                        return None, False
+
                     index = parent.index(element)
                     parent.remove(element)
 
