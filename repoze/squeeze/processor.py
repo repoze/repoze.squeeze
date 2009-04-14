@@ -7,6 +7,13 @@ import lxml.html
 import sha
 import mimetypes
 import webob
+import urllib
+
+try:
+    from repoze.xmliter import XMLSerializer
+except ImportError:
+    def XMLSerializer(tree, serializer=None):
+        return lxml.html.tostring(tree, pretty_print=True)
 
 from cStringIO import StringIO
 
@@ -149,7 +156,7 @@ class ResourceSqueezingMiddleware(object):
             if expires is None or ttl < expires:
                 expires = ttl                
                 
-        return changed, expires, lxml.html.tostring(tree, pretty_print=True)        
+        return changed, expires, XMLSerializer(tree, lxml.html.tostring)
 
     def update_elements(self, elements, selections, tree, host, uri, cache):
         changed = False
