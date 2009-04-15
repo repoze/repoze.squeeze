@@ -1,7 +1,8 @@
 Changelog
 ---------
 
-In next release
+0.4 (released 2009-04-15)
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - If a response has status '304 Not Modified', update the ``ttl`` but
   not the content. [malthe]
