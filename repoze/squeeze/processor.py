@@ -208,7 +208,6 @@ class ResourceSqueezingMiddleware(object):
                     changed = True
                     mutator(element, url)
                 else:
-                    index = parent.index(element)
                     parent.remove(element)
                     break
                     
