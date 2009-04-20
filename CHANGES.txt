@@ -1,6 +1,10 @@
 Changelog
 ---------
 
+In next release
+
+- Parse unicode body to ensure correct character decoding. [malthe]
+
 0.4 (released 2009-04-15)
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 

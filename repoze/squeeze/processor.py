@@ -99,7 +99,8 @@ class ResourceSqueezingMiddleware(object):
         if content_type and content_type.startswith('text/html'):
             # process document body
             changed, expires, body = self.process_html(
-                accept_request_data, request.host_url, request.path, response.body)
+                accept_request_data, request.host_url,
+                request.path, response.unicode_body)
 
             # if document is unchanged, set the cache-headers as
             if not changed:
@@ -112,7 +113,10 @@ class ResourceSqueezingMiddleware(object):
                 response.expires = min(response.expires, expires)
 
             # set new body
-            response.body = body
+            if isinstance(body, unicode):
+                response.unicode_body = body
+            else:
+                response.body = body
 
         # if url matches a URL we've seen in a processed document, and
         # if it's served from this host, process the response body and
@@ -136,7 +140,6 @@ class ResourceSqueezingMiddleware(object):
                     accept_request_data.cache[url] = body, content_type, ttl
 
         return response(environ, start_response)
-
 
     def process_html(self, accept_request_data, host, uri, body):
         javascripts = accept_request_data.javascripts
