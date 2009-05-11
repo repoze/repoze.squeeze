@@ -26,6 +26,10 @@ The middleware requires two following options to be set:
   @url_prefix: Path segment or full base URL that will be used to
   serve the cache directory as static files.
 
+  @threshold: Floating-point parameter that controls the merge to
+  apperances threshold. This parameter can normally be left at the
+  default (0.5).
+
 Remember to configure a WSGI application to serve the squeezed
 resources!
 
