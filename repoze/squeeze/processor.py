@@ -26,6 +26,22 @@ re_stylesheet_import = re.compile(
 re_stylesheet_url = re.compile(
     r'url\((?![A-Za-z]+://)([^\)]+)\)')
 
+class SqueezeInvalidation(object):
+    __slots__ = 'invalidate',
+
+    def __init__(self, string_value=None):
+        if string_value:
+            self.invalidate = string_value.lower() in (
+                'invalidate', 'y', 'yes', 't', 'true', 'on', '1')
+        else:
+            self.invalidate = False
+
+    def __nonzero__(self):
+        return self.invalidate
+
+    def __call__(self):
+        self.invalidate = True
+        
 class AcceptRequestData(object):
     def __init__(self):
         self.appearances = {}
@@ -34,6 +50,8 @@ class AcceptRequestData(object):
         self.cache = {}
         
 class ResourceSqueezingMiddleware(object):
+    invalidation_environ_key = "X-Squeeze-Invalidate"
+    
     def __init__(self, app, cache_dir=None, url_prefix=None, threshold=0.5):
         if url_prefix is None:
             raise ValueError("Must configure URL prefix (`url_prefix`).")
@@ -45,7 +63,7 @@ class ResourceSqueezingMiddleware(object):
         self.url_prefix = url_prefix
         self.threshold = threshold
         self.accept_request_registry = {}
-        
+
     def get_merged_resource(self, cache, selection, mediatypes):
         expires = None
         
@@ -87,8 +105,10 @@ class ResourceSqueezingMiddleware(object):
         if self.url_prefix.startswith('http'):
             return "/".join((self.url_prefix.rstrip('/'), resource))                
         return "/".join((host, self.url_prefix.strip('/'), resource))
-        
+
     def __call__(self, environ, start_response):
+        environ[self.invalidation_environ_key] = SqueezeInvalidation()
+
         request = webob.Request(environ)
         response = request.get_response(self.app, catch_exc_info=True)
 
@@ -99,6 +119,15 @@ class ResourceSqueezingMiddleware(object):
 
         content_type = response.content_type
         if content_type and content_type.startswith('text/html'):
+            # check if we need to invalidate cache
+            invalidation = environ.get(self.invalidation_environ_key)
+            if isinstance(invalidation, basestring):
+                invalidation = SqueezeInvalidation(invalidation)
+
+            if invalidation:
+                for registry in self.accept_request_registry.values():
+                    registry.cache.clear()
+
             # process document body
             changed, expires, body = self.process_html(
                 accept_request_data, request.host_url,

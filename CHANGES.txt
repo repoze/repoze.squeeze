@@ -1,6 +1,11 @@
 Changelog
 ---------
 
+In next release
+
+- Added environment variable control of file cache
+  invalidation. [malthe]
+
 0.4.2 (released 2009-05-11)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

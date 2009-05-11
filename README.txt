@@ -29,4 +29,19 @@ The middleware requires two following options to be set:
 Remember to configure a WSGI application to serve the squeezed
 resources!
 
+Invalidation
+------------
 
+To invalidate the file cache, upstream applications can set the
+"X-Squeeze-Invalidate" header to a true value; note that before the
+application is called, the middleware adds this key to the environment
+such that applications which can't modify the environment can still
+flag for invalidation:
+
+  >>> invalidate = environ["X-Squeeze-Invalidate"]
+  >>> invalidate()
+
+This will reset the file cache registry; note that no cache files are
+ever deleted (to preserve web server integrity). You can manually
+purge the file cache at any time be deleting the files (this is
+allowed at run-time).
