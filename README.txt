@@ -18,7 +18,7 @@ references.
 Usage
 -----
 
-The middleware requires two following options to be set:
+Configure the middleware with the following two options (required):
 
   @cache_dir: Relative path to a directory where we store squeezed
   resources
@@ -26,12 +26,14 @@ The middleware requires two following options to be set:
   @url_prefix: Path segment or full base URL that will be used to
   serve the cache directory as static files.
 
+The following option is optional:
+  
   @threshold: Floating-point parameter that controls the merge to
   apperances threshold. This parameter can normally be left at the
   default (0.5).
 
-Remember to configure a WSGI application to serve the squeezed
-resources!
+In addition, you must configure the WSGI application to serve the file
+cache directory from the ``url_prefix`` (e.g. "cache").
 
 Invalidation
 ------------
