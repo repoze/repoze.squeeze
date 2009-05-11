@@ -1,7 +1,8 @@
 Changelog
 ---------
 
-In next release:
+0.4.2 (released 2009-05-11)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - Add semicolon after javascripts to make sure any function-block is
   properly terminated (necessary due to concatenation). [malthe]
