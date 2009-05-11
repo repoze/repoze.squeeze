@@ -70,7 +70,9 @@ class ResourceSqueezingMiddleware(object):
             if mimetype == 'text/css' and mediatype:
                 out.write('@media %s {\n%s}\n' % (mediatype, body))
             else:
-                out.write(body)
+                out.write(body+'\n')
+            if mimetype == 'application/x-javascript':
+                out.write(';\n')
         body = out.getvalue()
         digest = sha.new(body).hexdigest() + (ext or "")
 
