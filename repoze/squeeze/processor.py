@@ -201,8 +201,8 @@ class ResourceSqueezingMiddleware(object):
             ttl, changed = self.update_elements(
                 elements, selections, tree, host, uri, cache) or changed
 
-            if expires is None or ttl < expires:
-                expires = ttl                
+            if expires is None or ttl is None or ttl < expires:
+                expires = ttl
                 
         return changed, expires, XMLSerializer(tree, lxml.html.tostring)
 
@@ -232,7 +232,7 @@ class ResourceSqueezingMiddleware(object):
                 if resource is None or src not in selection:
                     continue
 
-                if expires is None or ttl < expires:
+                if expires is None or ttl is None or ttl < expires:
                     expires = ttl
 
                 # if this is the last item in the selection,
