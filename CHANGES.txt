@@ -3,6 +3,8 @@ Changelog
 
 In next release...
 
+- Fixed edge-case with self-closing style elements. [malthe]
+
 - Fixed edge-case issue with missing ttl-value. [malthe]
 
 0.4.3 (released 2009-05-11)

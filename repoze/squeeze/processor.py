@@ -264,7 +264,7 @@ def update_style_tag(element, url):
     
     """
     
-    m = re_stylesheet_import.match(element.text)
+    m = re_stylesheet_import.match(element.text or u"")
     if m is not None:
         before = m.group(1)
         path = m.group(2)
@@ -278,7 +278,7 @@ def get_link_url(element):
     return element.attrib['href']
 
 def get_style_url(element):
-    m = re_stylesheet_import.match(element.text)
+    m = re_stylesheet_import.match(element.text or u"")
     if m is not None:
         return m.group(2)
     
