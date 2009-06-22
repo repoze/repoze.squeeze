@@ -1,7 +1,8 @@
 Changelog
 ---------
 
-In next release...
+0.4.4 (released 2009-06-22)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - Fixed edge-case where a response would not have a character set
   defined and hence couldn't be expressed as unicode. [malthe]
