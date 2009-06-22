@@ -3,6 +3,9 @@ Changelog
 
 In next release...
 
+- Fixed edge-case where a response would not have a character set
+  defined and hence couldn't be expressed as unicode. [malthe]
+
 - Fixed edge-case with self-closing style elements. [malthe]
 
 - Fixed edge-case issue with missing ttl-value. [malthe]

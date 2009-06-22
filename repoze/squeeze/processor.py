@@ -129,6 +129,8 @@ class ResourceSqueezingMiddleware(object):
                     registry.cache.clear()
 
             # process document body
+            if response.charset is None:
+                return
             changed, expires, body = self.process_html(
                 accept_request_data, request.host_url,
                 request.path, response.unicode_body)
